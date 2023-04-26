@@ -32,43 +32,43 @@ const pool = new Pool({
     connectionTimeoutMillis: 2000,
 })
 
-//Create tables
-// pool.query("CREATE TABLE IF NOT EXISTS users (vk_id integer, balance integer)")
-//     .then((q_res)=>{
-//         console.log(q_res)
-//     })
-//     .catch((err)=>{
-//         console.error("Error create users table", err)
-//     })
+// Create tables
+pool.query("CREATE TABLE IF NOT EXISTS users (vk_id integer, balance integer)")
+    .then((q_res)=>{
+        // console.log(q_res)
+    })
+    .catch((err)=>{
+        console.error("Error create users table", err)
+    })
 
-// pool.query("CREATE TABLE IF NOT EXISTS roll_logs (vk_id integer, win_value integer, timestamp integer)")
-//     .then((q_res)=>{
-//         console.log(q_res)
-//     })
-//     .catch((err)=>{
-//         console.error("Error create roll_logs table", err)
-//     })
+pool.query("CREATE TABLE IF NOT EXISTS roll_logs (vk_id integer, win_value integer, timestamp integer)")
+    .then((q_res)=>{
+        // console.log(q_res)
+    })
+    .catch((err)=>{
+        console.error("Error create roll_logs table", err)
+    })
 
-// pool.query("CREATE TABLE IF NOT EXISTS jackpot (result integer)")
-//     .then((q_res)=>{
-//         console.log(q_res)
-//     })
-//     .catch((err)=>{
-//         console.error("Error create jackpot table", err)
-//     })
+pool.query("CREATE TABLE IF NOT EXISTS jackpot (result integer)")
+    .then((q_res)=>{
+        // console.log(q_res)
+    })
+    .catch((err)=>{
+        console.error("Error create jackpot table", err)
+    })
 
-// //Load jackpot
-// pool.query("SELECT result FROM jackpot")
-//     .then((q_res)=>{
-//         if(q_res.length != 0){
-//             jackpot = q_res.rows[0]
-//             if(jackpot === NaN || jackpot === undefined)
-//                 jackpot = 0
-//         }
-//     })
-//     .catch((err)=>{
-//         console.error("Error get jackpot", err)
-//     })
+//Load jackpot
+pool.query("SELECT result FROM jackpot")
+    .then((q_res)=>{
+        if(q_res.length != 0){
+            jackpot = q_res.rows[0]
+            if(jackpot === NaN || jackpot === undefined)
+                jackpot = 0
+        }
+    })
+    .catch((err)=>{
+        console.error("Error get jackpot", err)
+    })
 
 //Create user
 async function createUser(vk_id){
