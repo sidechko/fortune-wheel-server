@@ -238,4 +238,4 @@ app.get("/api/rolls/", async (req, res)=>{
     res.status(200).set({'Content-Type': 'application/json'}).json(rolls)
 })
 
-https.createServer(options,app).use(cors()).listen(port, ()=>{console.log(`Example app listening on port ${port}`)})
+https.createServer(options,app).listen(port, ()=>{console.log(`Example app listening on port ${port}`)})
