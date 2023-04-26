@@ -2,6 +2,10 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
+const fs = require('fs')
+const http = require('http')
+const https = require('https')
+
 const express = require('express')
 const cors = require('cors')
 var jackpot = 0
@@ -11,6 +15,10 @@ const app = express()
 
 app.use(cors())
 
+const options = {
+    cert: fs.readFileSync('./certif/cert.pem'),
+    key: fs.readFileSync('./certif/key.pem')
+}
 
 const port = Number(process.env.SERVER_PORT)
 
@@ -25,42 +33,42 @@ const pool = new Pool({
 })
 
 //Create tables
-pool.query("CREATE TABLE IF NOT EXISTS users (vk_id integer, balance integer)")
-    .then((q_res)=>{
-        console.log(q_res)
-    })
-    .catch((err)=>{
-        console.error("Error create users table", err)
-    })
+// pool.query("CREATE TABLE IF NOT EXISTS users (vk_id integer, balance integer)")
+//     .then((q_res)=>{
+//         console.log(q_res)
+//     })
+//     .catch((err)=>{
+//         console.error("Error create users table", err)
+//     })
 
-pool.query("CREATE TABLE IF NOT EXISTS roll_logs (vk_id integer, win_value integer, timestamp integer)")
-    .then((q_res)=>{
-        console.log(q_res)
-    })
-    .catch((err)=>{
-        console.error("Error create roll_logs table", err)
-    })
+// pool.query("CREATE TABLE IF NOT EXISTS roll_logs (vk_id integer, win_value integer, timestamp integer)")
+//     .then((q_res)=>{
+//         console.log(q_res)
+//     })
+//     .catch((err)=>{
+//         console.error("Error create roll_logs table", err)
+//     })
 
-pool.query("CREATE TABLE IF NOT EXISTS jackpot (result integer)")
-    .then((q_res)=>{
-        console.log(q_res)
-    })
-    .catch((err)=>{
-        console.error("Error create jackpot table", err)
-    })
+// pool.query("CREATE TABLE IF NOT EXISTS jackpot (result integer)")
+//     .then((q_res)=>{
+//         console.log(q_res)
+//     })
+//     .catch((err)=>{
+//         console.error("Error create jackpot table", err)
+//     })
 
-//Load jackpot
-pool.query("SELECT result FROM jackpot")
-    .then((q_res)=>{
-        if(q_res.length != 0){
-            jackpot = q_res.rows[0]
-            if(jackpot === NaN || jackpot === undefined)
-                jackpot = 0
-        }
-    })
-    .catch((err)=>{
-        console.error("Error get jackpot", err)
-    })
+// //Load jackpot
+// pool.query("SELECT result FROM jackpot")
+//     .then((q_res)=>{
+//         if(q_res.length != 0){
+//             jackpot = q_res.rows[0]
+//             if(jackpot === NaN || jackpot === undefined)
+//                 jackpot = 0
+//         }
+//     })
+//     .catch((err)=>{
+//         console.error("Error get jackpot", err)
+//     })
 
 //Create user
 async function createUser(vk_id){
@@ -230,6 +238,4 @@ app.get("/api/rolls/", async (req, res)=>{
     res.status(200).set({'Content-Type': 'application/json'}).json(rolls)
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+https.createServer(options,app).listen(port, ()=>{console.log(`Example app listening on port ${port}`)})
