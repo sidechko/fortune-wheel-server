@@ -1,0 +1,5 @@
+DATABASE_HOST=localhost
+DATABASE_USER=s1pepega
+DATABASE_PASSWORD=s1pepega
+SERVER_PORT=3000
+npm start
