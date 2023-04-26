@@ -26,21 +26,27 @@ const pool = new Pool({
 
 //Create tables
 pool.query("CREATE TABLE IF NOT EXISTS users (vk_id integer, balance integer)")
-    .then((q_res)=>{})
+    .then((q_res)=>{
+        console.log(q_res)
+    })
     .catch((err)=>{
         console.error("Error create users table", err)
     })
 
 pool.query("CREATE TABLE IF NOT EXISTS roll_logs (vk_id integer, win_value integer, timestamp integer)")
-    .then((q_res)=>{})
+    .then((q_res)=>{
+        console.log(q_res)
+    })
     .catch((err)=>{
         console.error("Error create roll_logs table", err)
     })
 
 pool.query("CREATE TABLE IF NOT EXISTS jackpot (result integer)")
-    .then((q_res)=>{})
+    .then((q_res)=>{
+        console.log(q_res)
+    })
     .catch((err)=>{
-        console.error("Error create roll_logs table", err)
+        console.error("Error create jackpot table", err)
     })
 
 //Load jackpot
