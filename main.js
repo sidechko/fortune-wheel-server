@@ -77,6 +77,7 @@ async function createUser(vk_id){
         if(q_result.rows.length === 0){
             return null;
         }
+        console.log("create new user with id:", vk_id)
         return q_result.rows[0]
     }
     catch(err){
@@ -92,6 +93,7 @@ async function getUserOrCreate(vk_id){
         if(q_result.rows.length === 0){
             return await createUser(vk_id);
         }
+        console.log("getting user with id: ", vk_id)
         return q_result.rows[0];
     }
     catch(err){
@@ -104,6 +106,7 @@ async function getUserOrCreate(vk_id){
 async function updateUser(user){
     try{
         const q_result = await pool.query("UPDATE users SET balance = $2::integer WHERE vk_id = $1::integer", [user.vk_id, user.balance])
+        console.log("save user: ", user)
         return q_result.rows[0]
     }catch(err){
         console.error("Error updating user", err)
@@ -115,6 +118,7 @@ async function updateUser(user){
 async function saveRoll(user, win_value){
     try{
         const q_result = await pool.query("INSERT INTO roll_logs (vk_id, win_value, timestamp) VALUES ($1::integer, $2::integer, $3::integer)", [user.vk_id, win_value, Math.floor((new Date()).getTime()/1000)])
+        console.log("save roll for user:", user, ". With win count: ", win_value)
         return q_result.rows[0]
     }catch(err){
         console.error("Error save user roll", err)
@@ -126,6 +130,7 @@ async function saveRoll(user, win_value){
 async function getLastWinners(){
     try{
         const q_result = await pool.query("SELECT * FROM roll_logs ORDER BY timestamp DESC LIMIT 5")
+        console.log("Get last 5 spin")
         return q_result.rows
     }catch(err){
         console.error("Error fetching rolls", err)
@@ -136,12 +141,14 @@ async function getLastWinners(){
 app.get('/api/user/', async (req, res) => {
     const vk_id = req.get("Authorization");
     if(vk_id === undefined){
+        console.log("API GET user error, VK ID is NULL 401")
         res.status(401).send("Authorization header required")
         return
     }
 
     var user = await getUserOrCreate(vk_id);
     if(user === null){
+        console.log("API GET user error, user is NULL 500")
         res.status(500).send("Internal server error")
     }else{
         res.status(200).set({'Content-Type': 'application/json'}).json(user)
@@ -152,6 +159,7 @@ app.get('/api/user/', async (req, res) => {
 app.post('/api/roll/', async (req, res)=>{
     const vk_id = req.get("Authorization");
     if(vk_id === undefined){
+        console.log("API POST roll error, VK ID is NULL 401")
         res.status(401).send("Authorization header required")
         return
     }
@@ -159,11 +167,13 @@ app.post('/api/roll/', async (req, res)=>{
     var user = await getUserOrCreate(vk_id);
 
     if(user === null){
+        console.log("API POST roll error, USER is NULL 500")
         res.status(500).send("Internal server error")
         return
     }
 
     if(user.balance < 10){
+        console.log("API POST roll error, USER balance < 10 NULL 400")
         res.status(400).send("Insufficient funds on the balance sheet")
         return
     }
@@ -205,6 +215,7 @@ app.post('/api/roll/', async (req, res)=>{
     //Save roll
     if(saveRoll(user, win_value)===null){
         jackpot = jackpotBackup
+        console.log("API POST roll error, save roll 500")
         res.status(500).send("Internal server error")
         return
     }
@@ -214,6 +225,7 @@ app.post('/api/roll/', async (req, res)=>{
         const q_res = await pool.query("UPDATE jackpot SET result = $1::integer", [jackpot])
     }catch(err){
         jackpot = jackpotBackup
+        console.log("API POST roll error, save jackpot 500")
         console.error("Error updating jackpot",err)
         res.status(500).send("Internal server error")
         return
@@ -223,6 +235,7 @@ app.post('/api/roll/', async (req, res)=>{
     var updatedUser = await updateUser(user)
     if(updatedUser === null){
         jackpot = jackpotBackup
+        console.log("API POST roll error, update user 500")
         res.status(500).send("Internal server error")
         return
     }
@@ -237,6 +250,7 @@ app.get("/api/jackpot/", async (req, res)=>{
 app.get("/api/rolls/", async (req, res)=>{
     var rolls = await getLastWinners()
     if(rolls == null){
+        console.log("API GET rolls error, rolls is NULL 500")
         res.status(500).send("Internal server error")
         return
     }
