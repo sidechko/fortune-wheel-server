@@ -157,6 +157,12 @@ app.post('/api/roll/', async (req, res)=>{
     }
 
     var user = await getUserOrCreate(vk_id);
+
+    if(user === null){
+        res.status(500).send("Internal server error")
+        return
+    }
+
     if(user.balance < 10){
         res.status(400).send("Insufficient funds on the balance sheet")
         return
